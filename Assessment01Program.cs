@@ -1,12 +1,12 @@
 ﻿using System;
-
+using System.Linq;
 
 namespace CA_conteroDaniel
 {
     class Assessment01Program
     {
         double miles, gallons, mpg, price;
-        string input, unitType;
+        string gasType, unitType, detailLv;
         string apikey = "3d6Mms9i06IQ2Hrcvb3lht:4D99ebw6IAeZEaLuBuKicL";
         static void Main(string[] args)
         {
@@ -19,19 +19,20 @@ namespace CA_conteroDaniel
             Console.WriteLine("Please, Introduce now the amount of Gallons");
             calc.gallons = TryParseDouble(Console.ReadLine());
 
-            Console.WriteLine($"Are this {calc.gallons} Uk or US Gallons?");
-            calc.unitType = Console.ReadLine();
+            Console.WriteLine($"Are this {calc.gallons} gallons" +
+                $" Uk or US Gallons?");
+            calc.unitType = LocGallons(Console.ReadLine());
 
             Console.WriteLine("Is the vehicle Gasoline or Diesel?");
-            calc.input = Console.ReadLine();
-
-            calc.mpg = MPGCalculator(calc.miles, calc.gallons);
-            calc.price = PriceCalculator(calc.mpg, calc.gallons, calc.input);
-            Console.WriteLine($"{calc.price}");
+            calc.gasType = FuelType(Console.ReadLine());
+            Console.WriteLine("Would you like to get an extended conversion " +
+                "with more details? Please answer with \"Yes\" or \"No\"");
+            calc.detailLv = DetailSelector(Console.ReadLine());
         }
 
         static double TryParseDouble(string input) 
         {
+            Console.Clear();
             double newVal;
             try
             {
@@ -41,17 +42,87 @@ namespace CA_conteroDaniel
                 }
                 else 
                 {
-                    Console.WriteLine("The value need to be greater than 0");
+                    Console.WriteLine("The value need to be greater than 0." +
+                        " Please insert a valid number.");
                     newVal = TryParseDouble(Console.ReadLine());
                 }
             }
+
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine("Please insert a valid value");
+                Console.WriteLine(e.Message + " Please insert a valid value.");
                 newVal = TryParseDouble(Console.ReadLine());
             }
             return newVal;
+        }
+
+        static string LocGallons(string input) 
+        {
+            Console.Clear();
+            if (input.ToLower() == "uk" || input.ToLower() == "us")
+            {
+                return input.ToLower();
+            }
+            else 
+            {
+                Console.WriteLine("Please introduce a valid value, " +
+                    "the options are \"Uk\" or \"Us\"");
+                return LocGallons(Console.ReadLine());
+            }
+        }
+
+        static string FuelType(string input) 
+        {
+            Console.Clear();
+            string[] gasList = {"gas","gasoline"};
+            string[] oilList = { "diesel", "gasoil", "gas oil" };
+            input = input.ToLower();
+
+            if (gasList.Contains(input))
+            {
+                return "gas";
+            }
+            else if (oilList.Contains(input))
+            {
+                return "oil";
+            }
+            else 
+            {
+                Console.WriteLine("Please introduce a correct value for" +
+                    " \"Gasoline\" or \"Diesel\" fuel");
+                return FuelType(Console.ReadLine());
+            }
+
+        }
+
+        static string DetailSelector(string input) 
+        {
+            Console.Clear();
+            input = input.ToLower();
+            string[] yesList = { "y", "yes" };
+            string[] noList = { "n", "no" };
+
+            try
+            {
+                if (yesList.Contains(input))
+                {
+                    return "yes";
+                }
+                else if (noList.Contains(input))
+                {
+                    return "no";
+                }
+                else 
+                {
+                    return;
+                }
+            }
+            catch (ArgumentNullException nullE) 
+            {
+                Console.WriteLine(nullE + " Please insert \"Yes\" or \"No\"");
+                return DetailSelector(Console.ReadLine());
+            }
+      
         }
         
         static double MPGCalculator(double mileIN, double gallonIN)
@@ -76,6 +147,7 @@ namespace CA_conteroDaniel
 
         static double OnlinePriceCatch() 
         {
+            
             double onlinePrice;
             onlinePrice = 10 + 1;
             return onlinePrice;
