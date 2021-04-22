@@ -42,20 +42,20 @@ namespace CA_conteroDaniel
             using JsonDocument doc = JsonDocument.Parse(response.Body);
             JsonElement root = doc.RootElement;
         }
-
+            
         static void JsonMain()
         {
             string path = @"D:\json\test.json";
-
+            
             string jsonFromFile;
             using (var reader = new StreamReader(path)) 
             {
                 jsonFromFile = reader.ReadToEnd();
             }
-
+            
             Result gasListing = JsonConvert.DeserializeObject<Result>(jsonFromFile);
             Console.WriteLine(gasListing.results[0].country);
-
+            
             List<Gas> test = gasListing.results;
 
             foreach (Gas gas in test)
