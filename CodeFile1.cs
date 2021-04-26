@@ -13,7 +13,7 @@ namespace CA_conteroDaniel
 {
     class TestAPI
     {
-        public class Gas 
+        public class Gas
         {
             public string currency { get; set; }
             public string lpg { get; set; }
@@ -29,7 +29,7 @@ namespace CA_conteroDaniel
             public List<Gas> results { get; set; }
         }
 
-        static void HttpRequest() 
+        static void HttpRequest()
         {
             var client = Unirest.get("https://gas-price.p.rapidapi.com/europeanCountries");
 
@@ -42,29 +42,64 @@ namespace CA_conteroDaniel
             using JsonDocument doc = JsonDocument.Parse(response.Body);
             JsonElement root = doc.RootElement;
         }
-            
+
         static void JsonMain()
         {
             string path = @"D:\json\test.json";
-            
+
             string jsonFromFile;
-            using (var reader = new StreamReader(path)) 
+            using (var reader = new StreamReader(path))
             {
                 jsonFromFile = reader.ReadToEnd();
             }
-            
+
             Result gasListing = JsonConvert.DeserializeObject<Result>(jsonFromFile);
             Console.WriteLine(gasListing.results[0].country);
-            
-            List<Gas> test = gasListing.results;
 
-            foreach (Gas gas in test)
+            List<Gas> objList = gasListing.results;
+
+            foreach (Gas gas in objList)
             {
                 Console.WriteLine(gas.country);
                 Console.WriteLine(gas.diesel);
             }
+            Console.WriteLine(CountryList(objList));
 
 
         }
-    }
+
+        public static Result JsonProcess(string path) 
+        {
+            string jsonFromFile;
+            using (var reader = new StreamReader(path))
+            {
+                jsonFromFile = reader.ReadToEnd();
+            }
+
+            Result gasListing = JsonConvert.DeserializeObject<Result>(jsonFromFile);
+            return gasListing;
+        }
+
+        public static List<Gas> GasOBJ()
+        {
+            string path = @"D:\json\test.json";
+            List<Gas> objList = JsonProcess(path).results;
+            return objList;
+        }
+        
+        public static string[] CountryList(List<Gas> gasList) 
+        {
+            List<string> countryList = new List<string>();
+            foreach (Gas gas in gasList)
+            {
+                countryList.Add(gas.country.ToString());
+            }
+            return countryList.ToArray();
+        }
+
+       // public static double 
+
+
+    }   
+        
 }

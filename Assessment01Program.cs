@@ -38,7 +38,7 @@ namespace CA_conteroDaniel
         {
             var headersTable = HeadFormat();
             var mpgTable = InfoAssemble.MPGAssemble();
-            Console.WriteLine(mpgTable[0]);
+            Console.WriteLine($"{mpgTable[0]}        {mpgTable[2]}");
             var table = new ConsoleTable(headersTable);
             table.AddRow(mpgTable[4..])
                 .AddRow(InfoAssemble.KMLAssemble(mpgTable))
@@ -48,7 +48,7 @@ namespace CA_conteroDaniel
         {
             var headersTable = HeadFormat();
             var mpgTable = InfoAssemble.MPGAssemble();
-            Console.WriteLine(mpgTable[0]);
+            Console.WriteLine($"{mpgTable[0]}        {mpgTable[2]}");
             var table = new ConsoleTable(headersTable);
             table.AddRow(mpgTable[4..])
                 .Write(Format.Alternative);
@@ -118,15 +118,16 @@ namespace CA_conteroDaniel
             int result;
             Console.WriteLine("Please select the country where you purchased" +
                 " the fuel. Use a number, not the name.");
-            string[] countryList = APIGathering.APICountry();
-            for (int n = 0; n < countryList.Length; n++)
+            string[] cntryList = APIGathering.APICountry();
+            for (int n = 0; n < cntryList.Length; n++)
             {
-                Console.WriteLine($"{n}. {countryList[n]}");
+                Console.WriteLine($"{n}. {cntryList[n]}");
             }
-            result = InputCheck.TryParseInt(Console.ReadLine(), countryList.Length);
-            return countryList[result];
+            result = InputCheck.TryParseInt(Console.ReadLine(), cntryList.Length);
+            return cntryList[result];
         }
-        public static double GetPriceTotalGallon(double gallon, double literPrice, string loc)
+        public static double GetPriceTotalGallon(double gallon, 
+                                                 double literPrice, string loc)
         {
             double price = Calculator.CostPerGallon(literPrice, loc);
             return gallon*price;
@@ -155,7 +156,8 @@ namespace CA_conteroDaniel
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message + $" The value need to be between 0 and {lenght}. Please insert a valid number.");
+                    Console.WriteLine(e.Message + $" The value need to be " +
+                        $"between 0 and {lenght-1}. Please insert a valid number.");
                     result = TryParseInt(Console.ReadLine(), lenght);
                 }
             }
@@ -230,11 +232,11 @@ namespace CA_conteroDaniel
                 {
                     if (gasList.Contains(input))
                     {
-                        result = "gas";
+                        result = "gasoline";
                     }
                     else if (oilList.Contains(input))
                     {
-                        result = "oil";
+                        result = "diesel";
                     }
                     else
                     {
@@ -342,9 +344,10 @@ namespace CA_conteroDaniel
 
         public static string[] APICountry()
         {
-            string[] test = { "test a", "test b", "test c", "test d", "test e" };
+            //string[] test = { "test a", "test b", "test c", "test d", "test e" };
+            string[] result = TestAPI.CountryList(TestAPI.GasOBJ());
 
-            return test;
+            return result;
         }
     }
 
