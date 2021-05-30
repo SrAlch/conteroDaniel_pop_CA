@@ -4,7 +4,7 @@ using ConsoleTables;
 
 namespace CA_conteroDaniel
 {
-    class Assessment01Program
+    class assessment_main
     {
         static void Main(string[] args)
         {
