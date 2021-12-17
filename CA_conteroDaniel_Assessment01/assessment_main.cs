@@ -146,7 +146,7 @@ namespace CA_conteroDaniel
             Console.WriteLine("Please select the country where you purchased" +
                 " the fuel. Use a number, not the name.");
             string[] cntryList = APIGathering.APICountry();
-            while (result >= 0 && result <= cntryList.Length)
+            while (!(result >= 0 && result <= cntryList.Length))
             {
                 for (int n = 0; n < cntryList.Length; n++)
                 {
