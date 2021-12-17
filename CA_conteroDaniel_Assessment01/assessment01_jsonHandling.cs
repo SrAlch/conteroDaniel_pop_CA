@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Security.Permissions;
 using System.Linq;
-using unirest_net.http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
@@ -11,7 +10,7 @@ using System.Text.Json;
 
 namespace CA_conteroDaniel 
 {
-    class TestAPI
+    class JsonCall
     {
         public class Gas
         {
@@ -27,20 +26,6 @@ namespace CA_conteroDaniel
         {
             //List<Gas> results = new List<Gas>();
             public List<Gas> results { get; set; }
-        }
-
-        static void HttpRequest()
-        {
-            var client = Unirest.get("https://gas-price.p.rapidapi.com/europeanCountries");
-
-            HttpResponse<string> response = Unirest.get("https://gas-price.p.rapidapi.com/europeanCountries")
-                    .header("x-rapidapi-key", "b5db5ea616msh83542bd61fdd82cp10c4dejsn9d37827493ee")
-                    .header("x-rapidapi-host", "gas-price.p.rapidapi.com")
-                    //.header("Accept", "application/json")
-                    .asJson<string>();
-
-            using JsonDocument doc = JsonDocument.Parse(response.Body);
-            JsonElement root = doc.RootElement;
         }
 
         static void JsonMain()
@@ -64,8 +49,6 @@ namespace CA_conteroDaniel
                 Console.WriteLine(gas.diesel);
             }
             Console.WriteLine(CountryList(objList));
-
-
         }
 
         public static Result JsonProcess(string path) 
@@ -82,7 +65,7 @@ namespace CA_conteroDaniel
 
         public static List<Gas> GasOBJ()
         {
-            string path = @"D:\json\test.json";
+            string path = @"..\..\..\conteroDaniel_CA_JSONPrices.json";
             List<Gas> objList = JsonProcess(path).results;
             return objList;
         }
@@ -97,9 +80,29 @@ namespace CA_conteroDaniel
             return countryList.ToArray();
         }
 
-       // public static double 
-
-
+        public static double RetrieveApiPrice(List<Gas> gasList,
+                                                string country,
+                                                string fuelType)
+        {
+            double fuelPrice = 0;
+            foreach (Gas gas in gasList)
+            {
+                if (gas.country == country)
+                {
+                    if (fuelType == "gasoline")
+                    {
+                        double.TryParse(gas.gasoline.Replace(',', '.'),
+                                        out fuelPrice);
+                    }
+                    else 
+                    {
+                        double.TryParse(gas.diesel.Replace(',', '.'),
+                                        out fuelPrice);
+                    }
+                }
+            }
+            return fuelPrice;
+        }
     }   
         
 }

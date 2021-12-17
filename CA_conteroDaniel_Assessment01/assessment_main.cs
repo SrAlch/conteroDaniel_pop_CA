@@ -30,7 +30,7 @@ namespace CA_conteroDaniel
             string[] headersTable = {"Distance",
                                     "Amount Fuel",
                                     "Total Price",
-                                    "Average Consumption",
+                                    "Fuel Performance",
                                     "Price per Unit" };
             return headersTable;
         }
@@ -38,10 +38,20 @@ namespace CA_conteroDaniel
         {
             var headersTable = HeadFormat();
             var mpgTable = InfoAssemble.MPGAssemble();
-            Console.WriteLine($"{mpgTable[0]}        {mpgTable[2]}");
+            var kmlTable = InfoAssemble.KMLAssemble(mpgTable);
+            Console.WriteLine($"{mpgTable[0]}        " +
+                $"{mpgTable[2].First().ToString().ToUpper()}{mpgTable[2][1..]}");
             var table = new ConsoleTable(headersTable);
-            table.AddRow(mpgTable[4..])
-                .AddRow(InfoAssemble.KMLAssemble(mpgTable))
+            table.AddRow(mpgTable[4] + " Miles",
+                         mpgTable[5] + " " + mpgTable[1].ToUpper() + " Gal.",
+                         mpgTable[6] + " EUR",
+                         mpgTable[7] + " Miles/Gal.",
+                         mpgTable[8] + " EUR/Gal.")
+                .AddRow(kmlTable[4] + " Km",
+                        kmlTable[5] + " Ltr.",
+                        kmlTable[6] + " EUR",
+                        kmlTable[7] + " Km/L",
+                        kmlTable[8] + " EUR/L")
                 .Write(Format.Alternative);   
         }
         public static void TableGenMin() 
@@ -50,7 +60,11 @@ namespace CA_conteroDaniel
             var mpgTable = InfoAssemble.MPGAssemble();
             Console.WriteLine($"{mpgTable[0]}        {mpgTable[2]}");
             var table = new ConsoleTable(headersTable);
-            table.AddRow(mpgTable[4..])
+            table.AddRow(mpgTable[4] + " Miles",
+                         mpgTable[5] + mpgTable[1] + " Gal.",
+                         mpgTable[6] + " EUR",
+                         mpgTable[7] + " Miles/Gal.",
+                         mpgTable[8] + " EUR/Gal.")
                 .Write(Format.Alternative);
         }
     }
@@ -80,6 +94,19 @@ namespace CA_conteroDaniel
         public static string[] KMLAssemble(string[] origing) 
         {
             string[] info = new string[9];
+            info[0] = origing[0];
+            info[1] = origing[1];
+            info[2] = origing[2];
+            info[3] = origing[3];
+            info[4] = Calculator.KmConverter(double.Parse(origing[4])).ToString();
+            info[5] = Calculator.LitresConverter(double.Parse(origing[5]),
+                                                    origing[1]).ToString();
+            info[6] = Calculator.CostTotalLitre(double.Parse(info[3]),
+                                                double.Parse(info[5])).ToString();
+            info[7] = Calculator.KmPerLitre(double.Parse(info[4]),
+                                            double.Parse(info[5])).ToString();
+            info[8] = origing[3];
+
             return info;
         }
     }
@@ -115,15 +142,18 @@ namespace CA_conteroDaniel
         }
         public static string GetCountry() 
         {
-            int result;
+            int result=0;
             Console.WriteLine("Please select the country where you purchased" +
                 " the fuel. Use a number, not the name.");
             string[] cntryList = APIGathering.APICountry();
-            for (int n = 0; n < cntryList.Length; n++)
+            while (result >= 0 && result <= cntryList.Length)
             {
-                Console.WriteLine($"{n}. {cntryList[n]}");
+                for (int n = 0; n < cntryList.Length; n++)
+                {
+                    Console.WriteLine($"{n}. {cntryList[n]}");
+                }
+                result = InputCheck.TryParseInt(Console.ReadLine(), cntryList.Length);
             }
-            result = InputCheck.TryParseInt(Console.ReadLine(), cntryList.Length);
             return cntryList[result];
         }
         public static double GetPriceTotalGallon(double gallon, 
@@ -158,7 +188,8 @@ namespace CA_conteroDaniel
                 {
                     Console.WriteLine(e.Message + $" The value need to be " +
                         $"between 0 and {lenght-1}. Please insert a valid number.");
-                    result = TryParseInt(Console.ReadLine(), lenght);
+                    //result = TryParseInt(Console.ReadLine(), lenght);
+                    GetInfo.GetCountry();
                 }
             }
             return result;
@@ -294,12 +325,12 @@ namespace CA_conteroDaniel
     {
         public static double MPGCalculator(double mile, double gallon)
         {
-            return mile / gallon;   
+            return Math.Round(mile / gallon, 2, MidpointRounding.ToEven);
         }
 
         public static double KmPerLitre(double km, double litre) 
         {
-            return km / litre;
+            return Math.Round(km / litre, 2, MidpointRounding.ToEven);
         }
 
         public static double LitresConverter(double gallon, string loc) 
@@ -307,18 +338,18 @@ namespace CA_conteroDaniel
             double usGall = 3.785, ukGall = 4.546, result;
             if (loc == "us")
             {
-                result = gallon / usGall;
+                result = gallon * usGall;
             }
             else 
             {
-                result = gallon / ukGall;
+                result = gallon * ukGall;
             }
-            return result;
+            return Math.Round(result, 2, MidpointRounding.ToEven);
         }
 
         public static double KmConverter(double mile) 
         {
-            return mile / 1.609;
+            return Math.Round(mile * 1.60934, 2, MidpointRounding.ToEven);
         }
 
         public static double CostPerGallon(double apiPrice, string loc) 
@@ -326,26 +357,34 @@ namespace CA_conteroDaniel
             double usGall = 3.785, ukGall = 4.546, result;
             if (loc == "us")
             {
-                result = 1 / usGall * apiPrice;
+                result = usGall * apiPrice;
             }
             else
             {
-                result = 1 / ukGall * apiPrice;
+                result = ukGall * apiPrice;
             }
-            return result;
+            return Math.Round(result, 2, MidpointRounding.ToEven);
+        }
+
+        public static double CostTotalLitre(double apiPrice, double liters) 
+        {
+            return Math.Round(apiPrice * liters, 2, MidpointRounding.ToEven);
         }
     }
     public class APIGathering
     {
         public static double ApiPrice(string country, string gasType) 
         {
-            return 10;
+            double price = JsonCall.RetrieveApiPrice(JsonCall.GasOBJ(),
+                                                    country,
+                                                    gasType);
+            return price;
         }
 
         public static string[] APICountry()
         {
             //string[] test = { "test a", "test b", "test c", "test d", "test e" };
-            string[] result = TestAPI.CountryList(TestAPI.GasOBJ());
+            string[] result = JsonCall.CountryList(JsonCall.GasOBJ());
 
             return result;
         }
