@@ -1,12 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.Security.Permissions;
-using System.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
-using System.Text.Json;
 
 namespace CA_conteroDaniel 
 {
@@ -24,33 +18,8 @@ namespace CA_conteroDaniel
 
         public class Result
         {
-            //List<Gas> results = new List<Gas>();
             public List<Gas> results { get; set; }
         }
-
-        static void JsonMain()
-        {
-            string path = @"D:\json\test.json";
-
-            string jsonFromFile;
-            using (var reader = new StreamReader(path))
-            {
-                jsonFromFile = reader.ReadToEnd();
-            }
-
-            Result gasListing = JsonConvert.DeserializeObject<Result>(jsonFromFile);
-            Console.WriteLine(gasListing.results[0].country);
-
-            List<Gas> objList = gasListing.results;
-
-            foreach (Gas gas in objList)
-            {
-                Console.WriteLine(gas.country);
-                Console.WriteLine(gas.diesel);
-            }
-            Console.WriteLine(CountryList(objList));
-        }
-
         public static Result JsonProcess(string path) 
         {
             string jsonFromFile;
@@ -65,7 +34,7 @@ namespace CA_conteroDaniel
 
         public static List<Gas> GasOBJ()
         {
-            string path = @"..\..\..\conteroDaniel_CA_JSONPrices.json";
+            string path = @".\CA_conteroDaniel_Assessment01\conteroDaniel_CA_JSONPrices.json";
             List<Gas> objList = JsonProcess(path).results;
             return objList;
         }

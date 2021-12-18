@@ -188,7 +188,6 @@ namespace CA_conteroDaniel
                 {
                     Console.WriteLine(e.Message + $" The value need to be " +
                         $"between 0 and {lenght-1}. Please insert a valid number.");
-                    //result = TryParseInt(Console.ReadLine(), lenght);
                     GetInfo.GetCountry();
                 }
             }
@@ -383,7 +382,6 @@ namespace CA_conteroDaniel
 
         public static string[] APICountry()
         {
-            //string[] test = { "test a", "test b", "test c", "test d", "test e" };
             string[] result = JsonCall.CountryList(JsonCall.GasOBJ());
 
             return result;
