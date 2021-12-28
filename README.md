@@ -24,7 +24,7 @@ If the second player hasn't guessed the number after 3 attempts, you should disp
 
 ##### 3.	Array and Method 
 
-> Write a console application that fulfils the following requirements. 
+> Write a console application that fulfills the following requirements. 
 >
 > *	Create an array of grades. Enter the following values 34.7, 56.9, 75, 52, 92.2
 > *	Print to the screen the size of the array. 
